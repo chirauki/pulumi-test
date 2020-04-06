@@ -1,0 +1,8 @@
+config:
+  aws:region: eu-west-3
+  pulumi-test:eks-cluster-autoscaler-role-name: eksClusterAutoscaler
+  pulumi-test:eks-node-group-role-name: eksNodeGroupRole
+  pulumi-test:privateSubnetCidrs: 10.254.10.0/24,10.254.20.0/24,10.254.30.0/24
+  pulumi-test:publicSubnetCidrs: 10.254.1.0/24,10.254.2.0/24,10.254.3.0/24
+  pulumi-test:vpcCidr: 10.254.0.0/16
+  pulumi-test:vpcName: testPulumi
