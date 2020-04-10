@@ -1,43 +1,49 @@
 package vpc
 
 import (
+	"github/chirauki/pulumi-test/config"
+
 	"github.com/pulumi/pulumi-aws/sdk/go/aws/ec2"
 	"github.com/pulumi/pulumi/sdk/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/go/pulumi/config"
 )
 
 type Vpc struct {
-	ctx *pulumi.Context
-	vpc *ec2.Vpc
+	config            *config.EnvironmentConfig
+	Vpc               *ec2.Vpc
+	PublicSubnets     []*ec2.Subnet
+	PrivateSubnets    []*ec2.Subnet
+	PrivateSubnetsMap map[string]pulumi.IDOutput
 }
 
-func NewVpc(ctx *pulumi.Context) *Vpc {
+func NewVpc(cfg *config.EnvironmentConfig) *Vpc {
 	return &Vpc{
-		ctx: ctx,
+		config: cfg,
 	}
 }
 
 func (v *Vpc) CreateVpc() error {
-	conf := config.New(v.ctx, "")
-	cidr := conf.Require("vpcCidr")
-	name := conf.Require("vpcName")
+	cidr := v.config.Vpc.Cidr
+	name := v.config.Vpc.Name
 
-	vpc, err := ec2.NewVpc(v.ctx, v.ctx.Stack()+"-vpc", &ec2.VpcArgs{
+	vpcTags := pulumi.Map{
+		"Name":           pulumi.String(name),
+		"pulumi-stack":   pulumi.String(v.config.Ctx.Stack()),
+		"pulumi-project": pulumi.String(v.config.Ctx.Project()),
+	}
+	v.config.AddEksSharedTags(vpcTags)
+
+	vpc, err := ec2.NewVpc(v.config.Ctx, v.config.Ctx.Stack()+"-vpc-"+name, &ec2.VpcArgs{
 		EnableDnsSupport:   pulumi.BoolPtr(true),
 		EnableDnsHostnames: pulumi.BoolPtr(true),
 		CidrBlock:          pulumi.String(cidr),
-		Tags: pulumi.Map{
-			"Name":           pulumi.String(name),
-			"pulumi-stack":   pulumi.String(v.ctx.Stack()),
-			"pulumi-project": pulumi.String(v.ctx.Project()),
-		},
+		Tags:               vpcTags,
 	})
 	if err != nil {
 		return err
 	}
 
-	v.vpc = vpc
-	v.ctx.Export("vpc-id", vpc.ID())
+	v.Vpc = vpc
+	v.config.Ctx.Export("vpc-id", vpc.ID())
 
 	return nil
 }
