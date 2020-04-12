@@ -6,6 +6,7 @@ import (
 
 	"github.com/pulumi/pulumi-aws/sdk/go/aws/eks"
 	"github.com/pulumi/pulumi-aws/sdk/go/aws/iam"
+	"github.com/pulumi/pulumi-kubernetes/sdk/go/kubernetes"
 	"github.com/pulumi/pulumi/sdk/go/pulumi"
 )
 
@@ -131,5 +132,8 @@ func (e *Eks) createClusterIamRole(clusterName string) (*iam.Role, error) {
 			return role, err
 		}
 	}
+
+	kubernetes.N
+
 	return role, nil
 }
