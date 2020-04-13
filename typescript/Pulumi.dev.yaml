@@ -1,0 +1,51 @@
+config:
+  aws:region: eu-west-3
+  pulumi-test-ts:config:
+    eks:
+      count: 2
+      namePrefix: testPulumi
+      rolePrefix: eksClusterRole
+      nodeGroupRolePrefix: eksNodeGroupRole
+      nodeGroups:
+      - az: eu-west-3a
+        instanceTypes:
+        - t3.xlarge
+        name: AzA
+        size:
+          desired: 1
+          max: 5
+          min: 1
+      - az: eu-west-3b
+        instanceTypes:
+        - t3.xlarge
+        name: AzB
+        size:
+          desired: 1
+          max: 5
+          min: 1
+      - az: eu-west-3a
+        instanceTypes:
+        - t3.xlarge
+        name: AzC
+        size:
+          desired: 1
+          max: 5
+          min: 1
+    vpc:
+      cidr: 10.254.0.0/16
+      name: testPulumi
+      subnets:
+        private:
+        - az: eu-west-3a
+          cidr: 10.254.10.0/24
+        - az: eu-west-3b
+          cidr: 10.254.20.0/24
+        - az: eu-west-3c
+          cidr: 10.254.30.0/24
+        public:
+        - az: eu-west-3a
+          cidr: 10.254.11.0/24
+        - az: eu-west-3b
+          cidr: 10.254.21.0/24
+        - az: eu-west-3c
+          cidr: 10.254.31.0/24
